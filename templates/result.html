@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<title>orc test</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<style>
+    body,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+        font-family: "Raleway", sans-serif
+    }
+</style>
+<style>
+    .loader {
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid #3498db;
+        width: 120px;
+        height: 120px;
+        -webkit-animation: spin 2s linear infinite;
+        /* Safari */
+        animation: spin 2s linear infinite;
+    }
+
+    /* Safari */
+
+    @-webkit-keyframes spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+        100% {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+<body class="w3-light-grey">
+
+    <!-- w3-content defines a container for fixed size centered content,
+and is wrapped around the whole page content, except for the footer in this example -->
+    <div class="w3-content" style="max-width:1400px">
+
+        <!-- Header -->
+        <header class="w3-container w3-center w3-padding-32">
+            <h1><a href="/" style="text-decoration:none;"><i class="fa fa-home"></i> <b>Instargram Macro Analysys</b></a></h1>
+            <p> Data extraction result <span class="w3-tag"> ★ </span></p>
+        </header>
+
+        <!-- Grid -->
+        <div class="w3-row" id="contents">
+
+            <!-- Blog entries -->
+            <div class="w3-col l8 s12" style="width:100%;">
+                <!-- Blog entry -->
+                <div class="w3-card-4 w3-margin w3-white">
+                    <div class="w3-container">
+                        <h3><b> 데이터 추출 결과 </b></h3>
+                        <h5>
+                            {% if language :%}
+                            인식언어 [ <b>{{language}}</b> ] /
+                            {% endif %}
+                            {% if img_count : %}
+                            검사된 파일 [ <b>{{img_count}}</b> ] /
+                            {% endif %}
+                            {% if extraction_count : %}
+                            추출된 행 [ <b>{{extraction_count}}</b> ] /
+                            {% endif %}
+                            {% if not_img : %}
+                            검사되지 않은 파일 [ <b>{{not_img}}</b> ] /
+                            {% else : %}
+                            검사되지 않은 파일 [ <b>0</b> ] /
+                            {% endif %}
+                            {% if delay : %}
+                            추출 실행시간  [ <b>{{delay}}</b> 초 ]
+                            {% endif %}
+                            <br/>
+                            <span style="color:red; font-size:12px; padding:0; margin:0;"> * '댓글' or '공감' 영역은 ocr인식에 실패할 수 있습니다.  </span>
+                        </h5>
+                    </div>
+                    <hr/>
+                    <!--  데이터List -->
+                    <div class="w3-container">
+                        <table class="w3-table-all">
+                            <thead>
+                                <tr class="w3-green">
+                                    <th>아이디</th>
+                                    <th>팔로잉</th>
+                                    <th>언팔로잉</th>
+                                    <th>댓글</th>
+                                    <th>공감</th>
+                                    <th>포스팅</th>
+                                    <th>파일</th>
+                                </tr>
+                            </thead>
+                            {% for id in result.keys(): %} {% for li in result[id] %}
+                            <tr>
+                                <td>{{li['id']}}</td>
+                                <td>{{li['follwing']}}</td>
+                                <td>{{li['unfollwing']}}</td>
+                                <td>{{li['reply']}}</td>
+                                <td>{{li['like']}}</td>
+                                <td>{{li['posting']}}</td>
+                                <td><a href="javascript:modal_view('{{li['file']}}');" style="color:blue;">{{li['file']}}</a></td>
+                            </tr>
+                            {% endfor %} {% endfor %}
+                        </table>
+                        <p><button class="w3-button w3-pink" onclick="history.back();" style="float:left;">Cancel</button></p>
+                        <p><button class="w3-button w3-indigo" onclick="extraction('insert_data')" style="float:right;">Data insert to database</button></p>
+                        <br/><br/><br/>
+                    </div>
+                </div>
+                <hr>
+            </div>
+            <!-- END GRID -->
+        </div><br>
+        <!-- modal  -->
+        <div id="id01" class="w3-modal">
+            <div class="w3-modal-content w3-animate-top w3-card-4">
+                <header class="w3-container w3-indigo">
+                    <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+                    <h2 id="modalHead">Modal Header</h2>
+                </header>
+                <div id="modalBody" class="w3-container" style="overflow-y: auto; height:500px; margin:0; padding:0;">
+                </div>
+            </div>
+        </div>
+        <!-- endmodal -->
+        <!-- END w3-content -->
+    </div>
+    <!--  로딩바 -->
+    <div style="width:100%; display:none;" id="loader">
+        <div style="height:100px;"></div>
+        <div align="center">
+            <div class="loader"></div>
+            <br/><br/><br/>
+            <h2 id="loader_des">(내용)</h2>
+            <div class="w3-gray" style="width:30%; text-align:left; display:none;" id="barCon">
+                <div id='myBar' class='w3-container w3-blue w3-center' style='width:0%'>0%</div>
+            </div>
+            <b style="color:tomato;" id="success_msg"></b>
+        </div>
+        <div style="height:200px;"></div>
+    </div>
+
+    <script>
+        function modal_view(file) {
+            $("#modalHead").html(file);
+            $("#modalBody").html("<img src='/static/image/" + file + "' width='100%' height='100%'>");
+            document.getElementById('id01').style.display = 'block';
+        }
+
+        // 로딩및 이동
+        function extraction(def) {
+            $(window).scrollTop(0);
+            $("#contents").css("display", "none");
+            $("#loader").css("display", "block");
+            var elem = document.getElementById("myBar");
+
+            if (def == 'result') {
+                $("#loader_des").html("Data extracting");
+                var i = 0;
+                setInterval(function() {
+                    i++;
+                    if (i > 5) {
+                        i = 0;
+                        $("#loader_des").html("Data extracting");
+                    }
+                    $("#loader_des").html($("#loader_des").html() + " . ");
+                }, 1000);
+                location.href = "{{url_for('result')}}";
+            } else if (def == 'insert_data') {
+                document.getElementById("barCon").style.display ='block';
+                $("#loader_des").html("Data extracting and inserting");
+                var i = 0;
+                var se = -1;
+                var total = {{ img_count }}*1.8;
+                var per = 0;
+                setInterval(function() {
+                    se++;
+                    i++;
+                    if( per <=  90){
+                        per = parseInt((se/total)*100);
+                    }
+                    if( per >= 100 ){
+                        per = 100;
+                        $("#success_msg").html("작업이 곧 완료됩니다. 잠시만 기다려주세요.")
+                    }else{
+                        per += 1;
+                    }
+                    $("#loader_des").html($("#loader_des").html() + " . ");
+                    if (i > 5) {
+                        i = 0;
+                        $("#loader_des").html("Data extracting and inserting .");
+                    }
+                    elem.style.width = per + '%';
+                    elem.innerHTML = per * 1 + '%';
+                }, 1000);
+                location.href = "{{url_for('insert_data')}}";
+            }
+        }
+    </script>
+
+    <!-- Footer -->
+    <footer class="w3-container w3-dark-grey w3-padding-32 w3-margin-top">
+        <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+    </footer>
+
+</body>
+
+</html>

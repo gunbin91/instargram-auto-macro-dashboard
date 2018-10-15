@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<title>orc test</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<style>
+body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+</style>
+<style>
+.loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+<body class="w3-light-grey">
+    <div class="w3-content" style="max-width:1400px">
+
+    <!-- Header -->
+    <header class="w3-container w3-center w3-padding-32">
+    <h1><a href="/" style="text-decoration:none;"><i class="fa fa-home"></i> <b>Instargram Macro Analysys</b></a></h1>
+    <p> Detail Dashboard  <span class="w3-tag"> {{id}} </span></p>
+    <p>
+        <button  class="w3-btn w3-red w3-border" style="margin:0;" onclick="delete_data('{{id}}');" id="delete_btn">
+            [ {{id}} ] Delete <i class="fa fa-trash"></i>
+        </button>
+    </p>
+    </header>
+
+    <!-- Grid -->
+    <div class="w3-row" id="contents">
+
+    <!-- Blog entries -->
+    <div class="w3-col l8 s12" style="width:100%;">
+      <!-- Blog entry -->
+      <div class="w3-card-4 w3-margin w3-white">
+        <div class="w3-container" style="background:pink;">
+          <h3> <b> {{id}}</b></h3>
+          <h5>
+            {% if now : %}
+              <span style="float:left;">
+                <b>닉네임 :</b> {{now[3]}} /  <b>팔로워 :</b> {{now[0]}}  / <b>팔로잉 :</b> {{now[1]}}  / <b>게시물 :</b> {{now[2]}}
+              </span>
+              <span style="float:right;">
+                <a href="https://www.instagram.com/{{id}}" target="_blank" style="text-decoration:none; color:blue;">
+                    '{{id}}'님의 Instargram으로 이동
+                </a>
+            </span>
+            <br/>
+              {% else : %}
+              <b style="color:red;">Crawling Fail !</b>
+              {% endif %}
+          </h5>
+        </div>
+        <br/>
+    <!--  데이터List -->
+        <div class="w3-container">
+            <!--  차트테이블 -->
+            <table width="100%">
+                <tr>
+                    <td>
+
+                    </td>
+                    <td align="right">
+                        <div style="padding:0; margin:0; font-size:13px;">
+                            {% if total : %}
+                                <button class="w3-button w3-teal" onclick="location.href='{{url_for('detail',id=id)}}' ">최근 10개</button>
+                                <button class="w3-button w3-teal" onclick="location.href='{{url_for('detail',id=id)}}?total=true' " disabled>전체 보기</button>
+                            {% else : %}
+                                <button class="w3-button w3-teal" onclick="location.href='{{url_for('detail',id=id)}}' " disabled>최근 10개</button>
+                                <button class="w3-button w3-teal" onclick="location.href='{{url_for('detail',id=id)}}?total=true' ">전체 보기</button>
+                            {% endif %}
+                        </div><br/><br/>
+                    </td>
+                </tr>
+                <tr>
+                    <th width="15%">
+                        팔로잉 / 언팔로잉
+                    </th>
+                    <td><div id="gp1"></div></td>
+                </tr>
+                <tr><td colspan="2"> <hr/> </td></tr>
+                <tr>
+                    <th>댓글 / 공감</th>
+                    <td><div id="gp2"></div></td>
+                </tr>
+                <tr><td colspan="2"> <hr/> </td></tr>
+                <tr>
+                    <th valign="top"><button class="w3-btn w3-white w3-border w3-border-teal w3-round-large" onclick="listShow(this);">▶ Data List</button></th>
+                    <td>
+                        <div width="100%" height="100%" id="datalist"  style="width:90%; display:none;">
+                        <table class="w3-table-all">
+                        <thead>
+                          <tr class="w3-khaki">
+                            <th>팔로잉</th>
+                            <th>언팔로잉</th>
+                            <th>댓글</th>
+                            <th>공감</th>
+                            <th>포스팅</th>
+                            <th>추출파일</th>
+                            <th>삽입날짜</th>
+                          </tr>
+                        </thead>
+                        {% for li in result[::-1] :%}
+                        <tr>
+                          <td>{{li[2]}}</td>
+                          <td>{{li[3]}}</td>
+                          <td>{{li[4]}}</td>
+                          <td>{{li[5]}}</td>
+                          <td>{{li[6]}}</td>
+                          <td>{{li[7]}}</td>
+                          <td>{{li[8]}}</td>
+                        </tr>
+                        {% endfor %}
+                      </table>
+                  </div>
+                    </td>
+                </tr>
+            </table>
+
+            <br/><br/>
+
+      <!-- <p><button class="w3-button w3-pink" onclick="history.back();" style="float:left;">Cancel</button></p> -->
+      <p><button class="w3-button w3-indigo"onclick="loader('index')" style="float:right;"><i class="fa fa-bars"></i> LIST </button></p>
+            <br/><br/><br/>
+        </div>
+      </div>
+      <hr>
+    </div>
+
+    <!-- END GRID -->
+    </div><br>
+    <!-- END w3-content -->
+    </div>
+
+    <!--  로딩바 -->
+    <div style="width:100%; display:none;" id="loader">
+        <div style="height:100px;"></div>
+        <div align="center">
+            <div class="loader"></div>
+            <br/><br/><br/>
+            <h2 id="loader_des">(내용)</h2>
+        </div>
+        <div style="height:200px;"></div>
+    </div>
+
+    <!-- 스크립트 -->
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['line']});
+      google.charts.setOnLoadCallback(drawChart);
+      google.charts.setOnLoadCallback(drawChart2);
+
+    function drawChart() {
+
+      var data = new google.visualization.DataTable();
+      data.addColumn('number', 'ORDER BY DATE');
+      data.addColumn('number', '팔로잉');
+      data.addColumn('number', '언팔로잉');
+
+      // [ 날짜, 컬럼1, 컬럼2, 컬럼3]
+      data.addRows({{grape1}});
+
+      var options = {
+        chart: {
+          title: '',
+          subtitle: ''
+        },
+        width: '100%',
+        height: '100%',
+        axes: {
+          x: {
+            100: {side: 'top'}
+          }
+      },
+        series: {
+            0: { color: 'blue' },
+            1: { color: 'red' }
+        }
+      };
+
+      var chart = new google.charts.Line(document.getElementById('gp1'));
+
+      chart.draw(data, google.charts.Line.convertOptions(options));
+    }
+
+    function drawChart2() {
+
+      var data = new google.visualization.DataTable();
+      data.addColumn('number', 'ORDER BY DATE');
+      data.addColumn('number', '댓글');
+      data.addColumn('number', '공감');
+
+      // [ 날짜, 컬럼1, 컬럼2, 컬럼3]
+      data.addRows({{grape2}});
+
+      var options = {
+        chart: {
+          title: '',
+          subtitle: '',
+        },
+        width: '100%',
+        height: '100%',
+        axes: {
+          x: {
+            100: {side: 'top'}
+          }
+      },
+        series: {
+            0: { color: 'green' },
+            1: { color: 'hotpink' }
+        }
+      };
+
+      var chart = new google.charts.Line(document.getElementById('gp2'));
+
+      chart.draw(data, google.charts.Line.convertOptions(options));
+    }
+
+    state = 0;
+    function listShow(btn){
+        if( state == 0){
+            state=1;
+            $('#datalist').slideDown('slow');
+            $(btn).html("▲ 접기");
+        }else{
+            state=0;
+            $('#datalist').slideUp('slow');
+            $(btn).html("▶ Data List");
+        }
+    }
+
+    // 로딩및 이동
+    function loader(def){
+        $(window).scrollTop( 0 );
+        $("#contents").css("display","none");
+        $("#loader").css("display","block");
+        $("#delete_btn").css("display","none");
+
+        if(def == 'index'){
+            $("#loader_des").html("List crawling");
+            var i=0;
+            setInterval(function(){
+                i++;
+                if(i>5){
+                    i=0;
+                    $("#loader_des").html("List crawling");
+                }
+                $("#loader_des").html($("#loader_des").html() + " . ");
+            }, 1000);
+            location.href="{{url_for('index')}}"
+        }else if(def == 'delete'){
+            $("#loader_des").html(" '{{id}}' Data deleting");
+            var i=0;
+            setInterval(function(){
+                i++;
+                if(i>5){
+                    i=0;
+                    $("#loader_des").html(" '{{id}}' Data deleting");
+                }
+                $("#loader_des").html($("#loader_des").html() + " . ");
+            }, 1000);
+            location.href="{{url_for('delete_all')}}?id={{id}}";
+        }
+    }
+
+    // 데이터삭제
+    function delete_data(id){
+        var pass = prompt(id+"의  데이터를 모두 삭제 하시겠습니까? (1234입력)");
+        if (pass == "1234") {
+            loader("delete");
+        } else {
+            console.log(pass);
+        }
+    }
+    </script>
+
+    <!-- Footer -->
+    <footer class="w3-container w3-dark-grey w3-padding-32 w3-margin-top">
+      <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+    </footer>
+
+</body>
+</html>

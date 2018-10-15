@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<title>orc test</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<style>
+    body,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+        font-family: "Raleway", sans-serif
+    }
+</style>
+<style>
+    .loader {
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid #3498db;
+        width: 120px;
+        height: 120px;
+        -webkit-animation: spin 2s linear infinite;
+        /* Safari */
+        animation: spin 2s linear infinite;
+    }
+
+    /* Safari */
+
+    @-webkit-keyframes spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+        100% {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+<body class="w3-light-grey">
+
+    <div class="w3-content" style="max-width:1400px">
+
+        <!-- Header -->
+        <header class="w3-container w3-center w3-padding-32">
+            <h1><a href="/" style="text-decoration:none;"><i class="fa fa-home"></i> <b>Instargram Macro Analysys</b></a></h1>
+            <p> Image file list <span class="w3-tag"> ★ </span></p>
+        </header>
+
+        <!-- Grid -->
+        <div class="w3-row" id="contents">
+            <!-- Blog entries -->
+            <div class="w3-col l8 s12">
+                <!-- Blog entry -->
+                <div class="w3-card-4 w3-margin w3-white">
+                    <div class="w3-container">
+                        <h3><b> 이미지 파일 뷰 </b>
+                            <button class="w3-button w3-indigo" onclick="extraction('index')" style="float:right;"><i class="fa fa-bars"></i>List</button>
+                        </h3>
+                        <h5>
+                            현재 파일 개수 [ {{ filenames | length }} ]
+                        </h5>
+                    </div>
+                    <hr/>
+                    <!--  데이터List -->
+                    <div class="w3-container">
+                        <table class="w3-table-all" align="center">
+                            <thead>
+                                {% for file in filenames | reverse %}
+                                <tr class="w3-blue">
+                                    <th style="padding-top:15px;">{{file}}</th>
+                                    <th>
+                                        <button class="w3-btn w3-white w3-border w3-border-red w3-round-large" onclick="modal_view('{{file}}');" style="float:right; font-size:12px;">
+                            Exctraction Test</button>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <td align="center" colspan="2">
+                                        <a href="{{url_for('file_view',filename=file)}}" target="_blank">
+                                            <img src="/static/image/{{file}}" alt="{{file}}" width="100%" height="100%">
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </thead>
+                        </table>
+                        <p><button class="w3-button w3-pink" onclick="history.back();" style="float:left;">Cancel</button></p>
+                        <br/><br/><br/>
+                    </div>
+                </div>
+                <hr>
+            </div>
+
+            <div class="w3-col l4">
+                <!-- Posts -->
+                <div class="w3-card w3-margin">
+                    <div class="w3-container w3-padding">
+                        <h4> 추출되지 않은 파일목록 [ {{ filenames | length }} ]</h4>
+                    </div>
+                    <ul class="w3-ul w3-hoverable w3-white">
+                        {% for file in filenames | reverse %}
+                        <li class="w3-padding-16" onclick="modal_view('{{file}}');">
+                            <span class="w3-large">{{file}}</span><br>
+                            <!-- <span>Sed mattis nunc</span> -->
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <p><button class="w3-btn w3-block w3-teal" onclick="extraction('result')"> 데이터 추출 테스트 Data extraction Test </button></p>
+                    <p><button class="w3-btn w3-block w3-blue" onclick="extraction('insert_data')"> 데이터 바로 삽입 Data direct insert </button></p>
+                </div>
+                <hr>
+                <!-- END Introduction Menu -->
+            </div>
+            <!-- END GRID -->
+        </div><br>
+        <!-- END w3-content -->
+    </div>
+
+    <!-- modal  -->
+    <div id="id01" class="w3-modal">
+        <div class="w3-modal-content w3-animate-top w3-card-4">
+            <header class="w3-container w3-indigo">
+                <h3 onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-display-topright" style="margin-top:0;">&times;</h3>
+                <h3 id="modalHead">Modal Header</h3>
+            </header>
+            <div id="modalBody" class="w3-container" style="overflow-y: auto; height:380px; margin:0; padding:0;">
+            </div>
+            <div align="center" style="background:#3c3c3c;" id="sample_data">
+            </div>
+        </div>
+    </div>
+    <!-- endmodal -->
+
+    <!--  로딩바 -->
+    <div style="width:100%; display:none;" id="loader">
+        <div style="height:100px;"></div>
+        <div align="center">
+            <div class="loader"></div>
+            <br/><br/><br/>
+            <h2 id="loader_des">(내용)</h2>
+            <div class="w3-gray" style="width:30%; text-align:left; display:none;" id="barCon">
+                <div id='myBar' class='w3-container w3-blue w3-center' style='width:0%'>0%</div>
+            </div>
+            <b style="color:tomato;" id="success_msg"></b>
+        </div>
+        <div style="height:200px;"></div>
+    </div>
+
+
+    <script>
+        // 추출 modal ajax
+        function modal_view(file) {
+            $("#sample_data").html("<span style='fontsize:15px; color:white;'>데이터추출중 . . .</span><br/><div class='loader' style='height:70px; width:70px;''></div>");
+            $("#modalHead").html(file);
+            $("#modalBody").html("<img src='/static/image/" + file + "' alt='" + file + "' width='100%' height='100%'>");
+            document.getElementById('id01').style.display = 'block';
+            $.get("{{url_for('sample_aj')}}", {
+                file: file
+            }).done(function(data) {
+                if(data=="[]"){
+                    $("#sample_data").html("<div style='background:red; color:white;'><b>Extracting fail 추출이 불가능한 파일입니다.</b></div>");
+                }else{
+                    str = "<div style='background:#3c3c3c; color:white;'><b>Extracted data</b></div><table class='w3-table-all' width='100%' style='font-size:13px;'>" +
+                        "<thead>" +
+                        "<tr class='w3-light-blue'>" +
+                        "<th>아이디</th>" +
+                        "<th>팔로잉</th>" +
+                        "<th>언팔로잉</th>" +
+                        "<th>댓글</th>" +
+                        "<th>공감</th>" +
+                        "<th>포스팅</th>" +
+                        "</tr>" +
+                        "</thead>";
+                    data = eval(data);
+                    for (var i = 0; i < data.length; i++) {
+                        str += "<tr>" +
+                            "<td>" + data[i].id + "</td>" +
+                            "<td>" + data[i].follwing + "</td>" +
+                            "<td>" + data[i].unfollwing + "</td>" +
+                            "<td>" + data[i].reply + "</td>" +
+                            "<td>" + data[i].like + "</td>" +
+                            "<td>" + data[i].posting + "</td>" +
+                            "</tr>";
+                    }
+                    str += "</table>";
+                    $("#sample_data").html(str);
+                }
+            });
+        }
+
+        // 로딩및 이동
+        function extraction(def) {
+            $(window).scrollTop(0);
+            $("#contents").css("display", "none");
+            $("#loader").css("display", "block");
+            var elem = document.getElementById("myBar");
+
+            if (def == 'result') {
+                document.getElementById("barCon").style.display ='block';
+                $("#loader_des").html("Data extracting");
+                var i = 0;
+                var se = -1;
+                var total = {{ filenames | length }}*1.8;
+                var per = 0;
+                setInterval(function() {
+                    se++;
+                    i++;
+                    if( per <=  90){
+                        per = parseInt((se/total)*100);
+                    }
+                    if( per >= 100 ){
+                        per = 100;
+                        $("#success_msg").html("작업이 곧 완료됩니다. 잠시만 기다려주세요.")
+                    }else{
+                        per += 1;
+                    }
+                    $("#loader_des").html($("#loader_des").html() + " . ");
+                    if (i > 5) {
+                        i = 0;
+                        $("#loader_des").html("Data extracting .");
+                    }
+                    elem.style.width = per + '%';
+                    elem.innerHTML = per * 1 + '%';
+                }, 1000);
+                location.href = "{{url_for('result')}}";
+            } else if (def == 'insert_data') {
+                document.getElementById("barCon").style.display ='block';
+                $("#loader_des").html("Data extracting and inserting");
+                var i = 0;
+                var se = -1;
+                var total = {{ filenames | length }}*1.8;
+                var per = 0;
+                setInterval(function() {
+                    se++;
+                    i++;
+                    if( per <=  90){
+                        per = parseInt((se/total)*100);
+                    }
+                    if( per >= 100 ){
+                        per = 100;
+                        $("#success_msg").html("작업이 곧 완료됩니다. 잠시만 기다려주세요.")
+                    }else{
+                        per += 1;
+                    }
+                    $("#loader_des").html($("#loader_des").html() + " . ");
+                    if (i > 5) {
+                        i = 0;
+                        $("#loader_des").html("Data extracting and inserting .");
+                    }
+                    elem.style.width = per + '%';
+                    elem.innerHTML = per * 1 + '%';
+                }, 1000);
+                location.href = "{{url_for('insert_data')}}";
+            } else if (def == 'index') {
+                $("#loader_des").html("List Crawling");
+                var i = 0;
+                setInterval(function() {
+                    i++;
+                    if (i > 5) {
+                        i = 0;
+                        $("#loader_des").html("List Crawling");
+                    }
+                    $("#loader_des").html($("#loader_des").html() + " . ");
+                }, 1000);
+                location.href = "{{url_for('index')}}";
+            }
+        }
+    </script>
+
+    <!-- Footer -->
+    <footer class="w3-container w3-dark-grey w3-padding-32 w3-margin-top">
+        <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+    </footer>
+
+</body>
+
+</html>

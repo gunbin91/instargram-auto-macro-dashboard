@@ -1,0 +1,31 @@
+MSSQL SERVER 2017 ( 공식사이트 무료버전 )
+http://yaraba.tistory.com/341
+http://jkmoon.tistory.com/entry/MSSQL-PORT-%EB%B3%80%EA%B2%BD-%EB%B0%8F-%EC%A0%91%EC%86%8D
+
+- 아이디테이블
+
+CREATE TABLE IDLIST(
+id NVARCHAR(50)NOT NULL, -- NULL 값이 들어갈 수 없음
+indate DATETIME DEFAULT(GETDATE()), -- NULL 값이 들어갈 수 없음
+CONSTRAINT PK_MY_TABLE PRIMARY KEY(id))
+
+- 디테일테이블 
+
+CREATE TABLE DETAILLIST(
+seq int identity(1,1) primary key,
+id NVARCHAR(50)NOT NULL,
+follwing NVARCHAR(50),
+unfollwing NVARCHAR(50),
+reply NVARCHAR(50),
+likeyou NVARCHAR(50),
+posting NVARCHAR(50),
+filename NVARCHAR(50),
+indate DATETIME DEFAULT(GETDATE())
+)
+
+- 아이디삽입
+insert into IDLIST(id) values ('덕배')
+
+- 디테일삽입
+insert into DETAILLIST(id, follwing, unfollwing, reply, likeyou, posting, filename) values(
+'덕배', '2', '3', '4', '5', '6', 'filename') 

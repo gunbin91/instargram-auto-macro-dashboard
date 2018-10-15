@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<title>W3.CSS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+<body>
+    <div class="w3-container">
+
+        <h2>Dynamic Progress Bar with Labels</h2>
+        <p>Centered label:</p>
+
+        <div class="w3-light-grey">
+            <div id="myBar" class="w3-container w3-green w3-center" style="width:0%">0%</div>
+        </div>
+        <br>
+        <button class="w3-button w3-green" onclick="move()">Click Me</button>
+
+    </div>
+
+    <script>
+        function move() {
+            var i = 0;
+            var se = -1;
+            var total = 45;
+            var per = 0;
+            var elem = document.getElementById("myBar");
+            var id = setInterval(frame, 1000);
+
+            function frame() {
+                se++;
+                if (per <= 90) {
+                    per = parseInt((se / total) * 100);
+                }
+                if (per >= 99) {
+                    per = 99;
+                } else {
+                    per += 1;
+                }
+                elem.style.width = per + '%';
+                elem.innerHTML = per * 1 + '%';
+            }
+        }
+    </script>
+
+</body>
+
+</html>
