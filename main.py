@@ -21,9 +21,9 @@ from flask import send_from_directory
 app = Flask (__name__)
 img_root = 'static/image/'
 
-DB_SERVER = '127.0.0.1:1433\MYTEST'
-DB_USER = 'test'
-DB_PASS = 'test1234'
+DB_SERVER = 'sql_server_address'
+DB_USER = 'id'
+DB_PASS = 'password'
 
 @app.route("/test")
 def test():
@@ -363,7 +363,7 @@ def file_view(filename):
 
 ################################################################################
 
-AZURE_API_KEY = '1791b966e9b3488f9e54d05e58e0f705'
+AZURE_API_KEY = 'azure_vision_api_key'
 ALLOWED_EXTENSIONS = set([ 'png', 'jpg', 'jpeg' ])
 
 # 샘플링
